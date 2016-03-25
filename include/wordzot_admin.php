@@ -4,8 +4,9 @@ class WordZotAdmin {
 
   private $twig;
 
-  public function __construct($twig) {
+  public function __construct($twig, $wordzot) {
     $this->twig = $twig;
+    $this->wz = $wordzot;
     add_action('admin_menu', array($this, 'create_menu'));
   }
 
@@ -20,4 +21,5 @@ class WordZotAdmin {
             '99'
         );
   }
+
 }
