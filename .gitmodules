@@ -1,3 +1,6 @@
 [submodule "Twig"]
 	path = Twig
 	url = https://github.com/twigphp/Twig
+[submodule "libZotero"]
+	path = libZotero
+	url = https://github.com/fcheslack/libZotero
