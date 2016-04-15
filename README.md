@@ -11,6 +11,18 @@ This plugin provides themable (via Twig) access to the Zotero API for integratio
 The Labor and Working-Class History Association will be using this plugin to manage member bibliographies, whereby members add their recent publications via a simple form with spam protection. An admin user may then see entries suggested for addition from specific forms and add them to the bibliography without ever leaving the WordPress administration panel.
 
 # Roadmap
+# How I want Templates to Work
+Templates will be available in the backend to style the display of one's citations. There will be several built-in options for this (e.g., Chicago, MLA, APA, etc.), but the user will have a drop-down box of all types of items that are available in their library to theme. This way, they can theme them to however they want.
+
+Built-in templates will use hard-coded, inline styles, but we're using Twig here so people can edit that and make it slimmer if they so choose.
+
+Users will be able to create an infinite number of template groups so that they can style the same references in different ways in different places. But there will always be a default template group that will be the fallback when unknown template groups are entered, or when a template group doesn't have a template defined for a particular item type. WordZot will fall back to that item's type in the default subgroup, and to the "default default" if that type isn't set on the default template.
+
+# Caching
+I'm still thinking through how I should cache. I think I want to cache by request (and thus in chunks) rather than storing individual items in a custom table. I'd like to use as few custom database options as possible, even if that means storing a serialized object as a WordPress option.
+
+I'm thinking at the moment of preferring the filesystem, but falling back to WordPress options if the user prefers it or the cache isn't writable.
+
 ## Version 0.1
 - [x] Basic Zotero integration
   - [x] Allow user to configure the plugin by adding a Zotero key
