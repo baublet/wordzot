@@ -17,6 +17,11 @@ class WordZot {
 
   }
 
+  public static function apiKeyValid() {
+    if(get_option("wordzot-user-id") == false) return false;
+    return true;
+  }
+
   public function initialize() {
     $api_key = get_option("wordzot-api-key");
     if($api_key === false) return false;

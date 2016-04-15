@@ -20,3 +20,4 @@ require_once("include/wordzot_admin.php");
 $wordzot_base = new WordZot($_TWIG);
 // Admin menu features
 $wordzot_admin = new WordZotAdmin($_TWIG, $wordzot_base);
+$wordzot_admin->admin_dir = dirname(__FILE__) . "/admin/";

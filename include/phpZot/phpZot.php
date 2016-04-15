@@ -38,13 +38,23 @@ class phpZot {
   }
 
   public function testConnection() {
-    if($this->api_key == false) return false;
     $response = json_decode($this->request("/keys/" . $this->api_key));
     if($response->key == $this->api_key) {
       update_option("wordzot-user-id", $response->userID);
       update_option("wordzot-username", $response->username);
       return true;
     }
+    update_option("wordzot-user-id", false);
+    update_option("wordzot-username", false);
     return false;
+  }
+
+  public function getGroups() {
+    $response = json_decode(
+      $this->request(
+        "/users/" . get_option("wordzot-user-id") . "/groups"
+      )
+    );
+    return $response;
   }
 }
