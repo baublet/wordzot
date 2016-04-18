@@ -120,7 +120,6 @@ function wz_showCollectionChildren($collection) {
   <h3>Tags</h3>
 
   <?php if($tags !== false): ?>
-
     <table class="wp-list-table widefat fixed striped">
       <thead>
         <tr>
@@ -145,11 +144,9 @@ function wz_showCollectionChildren($collection) {
         <?php endforeach; ?>
       </tbody>
     </table>
-
-  <? else: ?>
+  <?php else: ?>
     <p>You don't have any tags at the moment.</p>
   <?php endif; ?>
-
 </div>
 
 <?php include("_footer.php"); ?>

@@ -38,6 +38,14 @@ class WordZotAdmin {
           "wordzot-shortcodes",
           array($this, "showShortcodes"));
 
+        add_submenu_page(
+          "wordzot",
+          "Playground",
+          "Playground",
+          "manage_options",
+          "wordzot-playground",
+          array($this, "showPlayground"));
+
         /*
         add_submenu_page(
           string $parent_slug,
@@ -77,6 +85,19 @@ class WordZotAdmin {
     \WordZot::log($tags);
 
     include($this->admin_dir . "shortcodes.php");
+  }
+
+  public function showPlayground() {
+    $this->requireAPIKey();
+
+    $output = false;
+    // Parse the data they submitted to be parsed via the shortcode parser
+    if($_POST["parse"]) {
+      update_option("wordzot-playground", $_POST["parse"]);
+      $output = do_shortcode($_POST["parse"]);
+    }
+
+    include($this->admin_dir . "playground.php");
   }
 
 }

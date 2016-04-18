@@ -19,9 +19,9 @@ class phpZot {
   }
 
   /*
-   * Our basic, default API response function.
+   * Our basic, default API request function.
    */
-  public function response($url) {
+  public function request($url) {
     $this->error = false;
     $this->error_emssage = null;
     $ch = curl_init();
@@ -76,7 +76,7 @@ class phpZot {
    * keys and get the User ID and Username associated with keys.
    */
   public function testConnection() {
-    $response = $this->response("/keys/" . $this->api_key);
+    $response = $this->request("/keys/" . $this->api_key);
     if($response->key == $this->api_key) {
       return $response;
     }
@@ -84,7 +84,7 @@ class phpZot {
   }
 
   public function getUserGroups($user_id) {
-    $response = $this->response(
+    $response = $this->request(
       "/users/" .
       $user_id  .
       "/groups"
@@ -144,7 +144,7 @@ class phpZot {
   }
 
   public function getUserCollections($user_id) {
-    $response = $this->response(
+    $response = $this->request(
       "/users/" .
       $user_id .
       "/collections"
@@ -153,7 +153,7 @@ class phpZot {
   }
 
   public function getGroupCollections($group_id) {
-    return $this->response(
+    return $this->request(
       "/groups/" .
       $group_id .
       "/collections"
@@ -181,7 +181,7 @@ class phpZot {
   }
 
   public function getUserTags($user_id) {
-    $response = $this->response(
+    $response = $this->request(
       "/users/" .
       $user_id .
       "/tags"
@@ -190,12 +190,92 @@ class phpZot {
   }
 
   public function getGroupTags($group_id) {
-    $response = $this->response(
+    $response = $this->request(
       "/groups/" .
       $group_id .
       "/tags"
     );
     return $this->parseTags($response);
+  }
+
+  /*
+  ** This function takes an items response from the Zotero API and parses it into
+  ** something less verbose, making it easier to develop with.
+  */
+  private function parseItems($response) {
+    if($response == false) return false;
+
+    $items = array();
+    if(is_array($response)) {
+      foreach($response as $raw_item) {
+        $items[] = $this->parseItem($raw_item);
+      }
+    } else {
+      $items = $this->parseItem($response);
+    }
+    return $items;
+  }
+
+  /*
+  ** This function takes an item from the Zotero API and parses it into
+  ** something less verbose, making it easier to develop with.
+  */
+
+  private function parseItem($raw_item) {
+    // Saves only the important elements of a raw item
+    $item = new \StdClass();
+    $item->key = $raw_item->key;
+    $item->id = $raw_item->key;
+    $item->url = $raw_item->links->alternate->href;
+    $item->type = $raw_item->data->itemType;
+    $item->title = $raw_item->data->title;
+    $item->creators = $raw_item->data->creators;
+    $item->abstract = $raw_item->data->abstractNote;
+    $item->series = $raw_item->data->series;
+    $item->seriesNumber = $raw_item->data->seriesNumber;
+    $item->volume = $raw_item->data->volume;
+    $item->numberOfVolumes = $raw_item->data->numberOfVolumes;
+    $item->edition = $raw_item->data->edition;
+    $item->place = $raw_item->data->place;
+    $item->publisher = $raw_item->data->publisher;
+    $item->date = $raw_item->data->date;
+    $item->numPages = $raw_item->data->numPages;
+    $item->language = $raw_item->data->language;
+    $item->ISBN = $raw_item->data->ISBN;
+    $item->shortTitle = $raw_item->data->shortTitle;
+    // TODO: Tags
+    // TODO: Collections
+    return $item;
+  }
+
+  public function getUserItems($user_id) {
+    $response = $this->request(
+      "/users/" .
+      $user_id .
+      "/items"
+    );
+    return $this->parseItems($response);
+  }
+
+  public function getGroupItems($group_id) {
+
+  }
+
+  public function getCollectionItems($url) {
+    $response = $this->request($url);
+    return $this->parseItems($response);
+  }
+
+  public function getUserCollectionItems($user_id, $collection_key) {
+    return $this->getCollectionItems(
+      "/users/" . $user_id . "/collections/" . $collection_key . "/items"
+    );
+  }
+
+  public function getGroupCollectionItems($group_id, $collection_key) {
+    return $this->getCollectionItems(
+      "/grups/" . $group_id . "/collections/" . $collection_key . "/items"
+    );
   }
 
 }

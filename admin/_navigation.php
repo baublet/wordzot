@@ -11,6 +11,10 @@ $page = (isset($_GET['page'])) ? $_GET['page'] : false;
      class="nav-tab<?php echo ($page == "wordzot-shortcodes") ? " nav-tab-active" : ""; ?>">
     Shortcodes
   </a>
+  <a href="?page=wordzot-playground"
+     class="nav-tab<?php echo ($page == "wordzot-playground") ? " nav-tab-active" : ""; ?>">
+    Playground
+  </a>
   <a href=""
      class="nav-tab<?php echo ($page == "") ? " nav-tab-active" : ""; ?>">
     User Submissions
