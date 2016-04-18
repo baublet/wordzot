@@ -29,19 +29,35 @@ I'm thinking at the moment of preferring the filesystem, but falling back to Wor
   - [x] Check the validity and permissions of the Zotero api key
 
 - [ ] Fetch references from a Zotero account/group
-  - [ ] Allow the user to do basic operations
-    - [ ] Fetch a user's collections
+  - [x] Allow the user to do basic operations
+    - [x] Fetch a user's collections
     - [x] Fetch a user's groups
-    - [ ] Fetch a group's collections
+    - [x] Fetch a group's collections
+    - [x] Fetch a user's tags
+    - [x] Fetch a group's tags
+    - [x] Basic item fetching
+    - [x] Formatting all of the above for dev-friendly operations
 
-  - [ ] Setup a backend database to cache these so we don't have to hammer the API
+  - [ ] Basic shortcode options
+    - [ ] Show items from a tag
+    - [ ] Show items from a group
+    - [ ] Show items from a collection
+
+  - [ ] Advanced shortcode options
+    - [ ] Automatic pagination
+    - [ ] Searches
+    - [ ] Multiple tags
+    - [ ] Logic
+
+- [ ] Setup a backend database to cache these so we don't have to hammer the API
   - [ ] Steps for fetching before displaying
     - [ ] If it's already cached, just use the information in the local db
-    - [ ] Clear the database of all references matching earlier versions of this request
+    - [ ] Is the cache old? Dump it, if so and go to next step. Otherwise jump to display
     - [ ] Fetch items from the API
-    - [ ] Put them in the local db
+    - [ ] Put them in the local DB
     - [ ] Display them
 
+- [ ] Decouple phpZot so that I can add it as a submodule and its own repo later
 - [ ] Incorporate Twig templating for displaying references
   - [ ] Setup backend admin options for this (we won't be doing inline templates)
   - [ ] Template groups
