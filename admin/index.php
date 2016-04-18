@@ -1,23 +1,18 @@
-<?php
-  // Updates our API key if a new one is passed
-  if($_POST["apikey"]) {
-    update_option("wordzot-api-key", $_POST["apikey"]);
-    $wordzot_base->initialize();
-    $wordzot_base->phpZot->testConnection();
-  }
-?>
-
 <?php include("_header.php"); ?>
 
 <h3>Zotero Settings</h3>
 <?php if (!get_option("wordzot-user-id")): ?>
-  <p class="error"><strong>Error:</strong> To unlock the WordZot settings, you
-  must enter a valid API key in the field below and click "Save Changes." If
-  your API key is valid, the options will be unlocked and this message will
-  no longer be present.</p>
+  <div class="error">
+    <p><strong>Error:</strong> To unlock the WordZot settings, you
+    must enter a valid API key in the field below and click "Save Changes." If
+    your API key is valid, the options will be unlocked and this message will
+    no longer be present.</p>
+  </div>
 <?php else: ?>
-  <p class="success"><strong>Your API Key is Valid!</strong> You may now use
-  all of WordZot and its features with proper configuration.</p>
+  <div class="updated">
+    <p><strong>Your API Key is Valid!</strong> You may now use
+    all of WordZot and its features with proper configuration.</p>
+  </div>
 <?php endif; ?>
 <form action="" method="POST">
   <table class="form-table">
