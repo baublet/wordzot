@@ -29,6 +29,18 @@
 
 </style>
 
+<?php foreach($this->errors as $k => $error): ?>
+  <div class="error">
+    <p><strong>Error:</strong> <?php echo $error; ?></p>
+  </div>
+<?php endforeach; ?>
+
+<?php foreach($this->success as $k => $success): ?>
+  <div class="updated">
+    <p><strong>Success:</strong> <?php echo $success; ?></p>
+  </div>
+<?php endforeach; ?>
+
 <div class="wordzot wrap">
   <h2>WordZot</h2>
   <?php include("_navigation.php"); ?>

@@ -10,11 +10,6 @@
       style ements or inline code you need to control how your citations look.</p>
   </div>
   <div style="width:40%; padding-left: 2rem; padding-top: 2rem; border-left:1px solid rgba(0,0,0,.075)">
-    <?php if($new_template_error === false): ?>
-      <div class="success">
-        <p><strong>Success:</strong> New template group successfully added!</p>
-      </div>
-    <?php endif; ?>
     <form action="" method="POST">
       <input type="hidden" name="new-template-group" value="true">
       <h4><label for="new-tg">New Template Group:</label></h4>
@@ -48,7 +43,13 @@
     $first = false; ?>
     name="wz-template-groups">
   <div class="wordzot-wrapper-pane">
-    <h3><?php echo $template["name"]; ?></h3>
+    <h3>
+      <?php echo $template["name"]; ?>
+      <?php if($template["slug"] !== "default"): ?>
+        <a href="?page=wordzot-templates&delete=<?php echo $template["slug"]; ?>"
+          onclick="return confirm('Are you sure you want to delete this template group? This action cannot be undone.')">(Delete)</a>
+        <?php endif; ?>
+    </h3>
     More here later ;)
   </div>
   <?php endforeach; ?>

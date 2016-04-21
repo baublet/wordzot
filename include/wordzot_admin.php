@@ -6,10 +6,15 @@ class WordZotAdmin {
 
   private $twig, $wz;
 
+  public $updates = null,
+          $errors = null;
+
   public function __construct($twig, $wordzot) {
     $this->twig = $twig;
     $this->wz = $wordzot;
     add_action("admin_menu", array($this, "create_menu"));
+    $this->updates = array();
+    $this->errors = array();
   }
 
   public function requireAPIKey() {
@@ -66,6 +71,7 @@ class WordZotAdmin {
   }
 
   public function showIndex() {
+
     // If the user submitted new data, load it up
     if($_POST["apikey"]) {
       update_option("wordzot-api-key", $_POST["apikey"]);
@@ -79,6 +85,17 @@ class WordZotAdmin {
         update_option("wordzot-username", false);
       }
     }
+
+    if (!get_option("wordzot-user-id")) {
+      $this->errors[] = "To unlock the WordZot settings, you
+      must enter a valid API key in the field below and click \"Save Changes.\" If
+      your API key is valid, the options will be unlocked and this message will
+      no longer be present.";
+    } else {
+      $this->success[] = "<em>Your API Key is Valid!</em> You may now use
+      all of WordZot and its features with proper configuration.";
+    }
+
     include($this->admin_dir . "index.php");
   }
 
@@ -109,30 +126,50 @@ class WordZotAdmin {
   }
 
   public function showTemplates() {
-    $new_template_error = null;
+    $templates = get_option("wordzot-templates");
+
+    /* Delete a template group */
+    if(isset($_GET["delete"])) {
+      $slug = $_GET["delete"];
+      if($slug !== "default" && isset($templates[$slug])) {
+        unset($templates[$slug]);
+        update_option("wordzot-templates", $templates);
+        $this->success[] = "Template <em>" + $slug + "</em> successfully deleted";
+      } else {
+        $this->errors[] = "Unable to delete template <em>" + $slug + "</em>";
+      }
+    }
+
+    /* Add a new template group */
     if($_POST["new-template-group"] == true) {
-      $ntg_slug = sanitize_title_with_dashes($_POST["new-tg-name"]);
-      if(!empty($ntg_slug))
-        $templates = get_option("wordzot-templates");
-        if(isset($templates[$ntg_slug])) {
-          $ntg_name = $_POST["new-tg-name"];
+      $ntg_name = stripslashes($_POST["new-tg-name"]);
+      $ntg_slug = sanitize_title_with_dashes($ntg_name);
+      \WordZot::log("New template group slug: " . $ntg_slug);
+      if(!empty($ntg_slug)) {
+        if(!isset($templates[$ntg_slug])) {
           $ntg_templates = $this->wz->start_templates["default"]["templates"];
+          \WordZot::log("New template starters: \n" . print_r($ntg_templates, true));
           $templates[$ntg_slug] = array(
             "slug" => $ntg_slug,
             "name" => $ntg_name,
             "templates" => $ntg_templates
           );
           update_option("wordzot-templates", $templates);
-          $new_template_error = false;
+          \WordZot::log("New template added: " + $ntg_name + " (" + $ntg_slug + ")");
+          $this->success[] = "New template <em>" + $ntg_name + "</em> successfully added";
+        } else {
+          $this->errors[] = "New template name is too similar to existing template: <em>" .
+                                $templates[$ntg_slug]["name"] . "</em>. Template names should be as unique as possible";
         }
-        $new_template_error = "New template name is too similar to existing template: <strong>" .
-                              $templates[$ntg_name]["name"] . "</strong>";
+      } else {
+        $this->errors[] = "New template name cannot be blank";
       }
-      $new_template_error = "New template name cannot be blank";
     }
-    $templates = get_option("wordzot-templates");
-    if($templates == false) update_option("wordzot-templates", $this->wz->starter_templates);
 
+    /* Display our templates */
+    $templates = get_option("wordzot-templates");
+    //\WordZot::log("Templates: \n" . print_r($templates, true));
+    //\WordZot::log("Admin Object: \n" . print_r($this, true));
     include($this->admin_dir . "templates.php");
   }
 
