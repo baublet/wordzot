@@ -46,6 +46,14 @@ class WordZotAdmin {
           "wordzot-playground",
           array($this, "showPlayground"));
 
+        add_submenu_page(
+          "wordzot",
+          "Templates",
+          "Templates",
+          "manage_options",
+          "wordzot-templates",
+          array($this, "showTemplates"));
+
         /*
         add_submenu_page(
           string $parent_slug,
@@ -98,6 +106,13 @@ class WordZotAdmin {
     }
 
     include($this->admin_dir . "playground.php");
+  }
+
+  public function showTemplates() {
+    $templates = get_option("wordzot-templates");
+    if($templates == false) update_option("wordzot-templates", $this->wz->starter_templates);
+
+    include($this->admin_dir . "templates.php");
   }
 
 }

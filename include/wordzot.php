@@ -4,17 +4,33 @@ class WordZot {
   public $phpZot;
   private $api_key = false;
 
+  public $starter_templates = array(
+    "default" => array(
+      "slug" => "default",
+      "name" => "Default Template",
+      "templates" => array(
+        "default" => "{{ author }}, <em>{{ title }}</em> ({{ date }})"
+      )
+    )
+  );
+
   public function __construct($twig) {
     $this->twig = $twig;
     $this->initialize();
   }
 
   public function install() {
-
+    update_option("wordzot-user-id", false);
+    update_option("wordzot-username", false);
+    update_option("wordzot-playground", false);
+    update_option("wordzot-templates", $this->starter_templates);
   }
 
   public function uninstall() {
-
+    delete_option("wordzot-user-id");
+    delete_option("wordzot-username");
+    delete_option("wordzot-playground");
+    delete_option("wordzot-templates");
   }
 
   public function initialize() {
