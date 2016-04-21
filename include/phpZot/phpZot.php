@@ -10,20 +10,31 @@ const ZOTERO_API_VERSION = 3;
 class phpZot {
 
   public  $error = false,
-          $error_message = null;
+          $error_message = null,
+          $cache_provider = null;
 
   private $api_key;
 
-  public function __construct($api_key) {
+  public function __construct($api_key, $cache_provider = false) {
     $this->api_key = $api_key;
+    $this->cache_provider = ($cache_provider) ? $cache_provider : null;
   }
 
   /*
    * Our basic, default API request function.
    */
   public function request($url) {
+    // If this is cached, return the cached value instead
+    $cache_key = $url;
+    if($this->cache_provider !== null) {
+      $cached = $this->cache_provider->get($cache_key);
+      if($cached !== false) {
+        return $cached;
+      }
+    }
+
     $this->error = false;
-    $this->error_emssage = null;
+    $this->error_message = null;
     $ch = curl_init();
     $http_headers = array(
       "Zotero-API-Version: " . ZOTERO_API_VERSION,
@@ -52,6 +63,12 @@ class phpZot {
     }
 
     $response = json_decode($response);
+
+    // Save it to our cache
+    if($this->cache_provider !== null) {
+      $block = $response;
+      $this->cache_provider->set($cache_key, $block);
+    }
 
     return $this->parse($response);
   }

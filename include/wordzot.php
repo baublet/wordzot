@@ -21,9 +21,12 @@ class WordZot {
     $api_key = get_option("wordzot-api-key");
     if($api_key === false) return false;
 
+    // Initialize our cache provider
+    $cache_provider = new \Zotero\fsCache(_WORDZOT_PLUGIN_DIR . "/cache");
+
     // Initialize our phpZot class(es)
     $this->api_key = $api_key;
-    $this->phpZot = new \Zotero\phpZot($this->api_key);
+    $this->phpZot = new \Zotero\phpZot($this->api_key, $cache_provider);
 
     // Add our shortcode
     add_shortcode("wordzot", array($this, "do_shortcode"));
