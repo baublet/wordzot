@@ -109,6 +109,27 @@ class WordZotAdmin {
   }
 
   public function showTemplates() {
+    $new_template_error = null;
+    if($_POST["new-template-group"] == true) {
+      $ntg_slug = sanitize_title_with_dashes($_POST["new-tg-name"]);
+      if(!empty($ntg_slug))
+        $templates = get_option("wordzot-templates");
+        if(isset($templates[$ntg_slug])) {
+          $ntg_name = $_POST["new-tg-name"];
+          $ntg_templates = $this->wz->start_templates["default"]["templates"];
+          $templates[$ntg_slug] = array(
+            "slug" => $ntg_slug,
+            "name" => $ntg_name,
+            "templates" => $ntg_templates
+          );
+          update_option("wordzot-templates", $templates);
+          $new_template_error = false;
+        }
+        $new_template_error = "New template name is too similar to existing template: <strong>" .
+                              $templates[$ntg_name]["name"] . "</strong>";
+      }
+      $new_template_error = "New template name cannot be blank";
+    }
     $templates = get_option("wordzot-templates");
     if($templates == false) update_option("wordzot-templates", $this->wz->starter_templates);
 

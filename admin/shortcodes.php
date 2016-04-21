@@ -35,6 +35,8 @@ function wz_showCollectionChildren($collection) {
   </li>
 </ul>
 
+<hr>
+
 <input type="radio" checked="checked" class="wz-helper-input" name="wz_sc_tabs" id="wz_collections">
 <div class="wordzot-wrapper-pane">
   <h3>Collections</h3>

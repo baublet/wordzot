@@ -10,6 +10,11 @@
       style ements or inline code you need to control how your citations look.</p>
   </div>
   <div style="width:40%; padding-left: 2rem; padding-top: 2rem; border-left:1px solid rgba(0,0,0,.075)">
+    <?php if($new_template_error === false): ?>
+      <div class="success">
+        <p><strong>Success:</strong> New template group successfully added!</p>
+      </div>
+    <?php endif; ?>
     <form action="" method="POST">
       <input type="hidden" name="new-template-group" value="true">
       <h4><label for="new-tg">New Template Group:</label></h4>
