@@ -4,7 +4,8 @@
 .wz-menu label {
   cursor: pointer;
   padding: .5rem;
-  border: 1px solid transparent;
+  border: 1px solid rgba(0, 0, 0, .1);
+  background: rgba(0, 0, 0, .01);
   border-radius: 5px;
 }
 .wz-menu label:hover {

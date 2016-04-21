@@ -8,12 +8,12 @@
       <th><label for="apikey">Zotero API Key:</label></th>
       <td>
         <input type="text" name="apikey" id="apikey"
-          value="<?=get_option("wordzot-api-key")?>">
+          value="<?php echo get_option("wordzot-api-key"); ?>">
       </td>
     </tr>
     <tr>
       <th><label>User ID:</label></th>
-      <td><input type="text" value="<?=get_option("wordzot-user-id")?>" disabled></td>
+      <td><input type="text" value="<?php echo get_option("wordzot-user-id"); ?>" disabled></td>
     </tr>
     <tr>
       <th><label>Username:</label></th>

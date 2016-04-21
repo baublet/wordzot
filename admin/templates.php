@@ -34,23 +34,26 @@
     <?php endforeach; ?>
   </ul>
 
-  <hr>
-
   <?php $first = true; foreach($templates as $template): ?>
   <input type="radio" class="wz-helper-input"
     id="wz_<?php echo $template["slug"]; ?>"
     <?php echo ($first) ? " checked=\"checked\"" : '' ;
     $first = false; ?>
     name="wz-template-groups">
-  <div class="wordzot-wrapper-pane">
-    <h3>
-      <?php echo $template["name"]; ?>
-      <?php if($template["slug"] !== "default"): ?>
-        <a href="?page=wordzot-templates&delete=<?php echo $template["slug"]; ?>"
-          onclick="return confirm('Are you sure you want to delete this template group? This action cannot be undone.')">(Delete)</a>
-        <?php endif; ?>
-    </h3>
-    More here later ;)
+  <div class="wordzot-wrapper-pane postbox">
+    <div class="inside">
+      <h3>
+        <span><?php echo $template["name"]; ?></span>
+        <?php if($template["slug"] !== "default"): ?>
+          <a href="?page=wordzot-templates&delete=<?php echo $template["slug"]; ?>"
+            onclick="return confirm('Are you sure you want to delete this template group? This action cannot be undone.')">
+            <span class="dashicons dashicons-no"></span>
+            <span class="screen-reader-text">Delete</span>
+          </a>
+          <?php endif; ?>
+      </h3>
+      More here later ;)
+    </div>
   </div>
   <?php endforeach; ?>
 
