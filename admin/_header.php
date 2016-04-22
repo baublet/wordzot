@@ -16,17 +16,12 @@
   padding-left: .5rem;
 }
 
-.wz-helper-input {
-  display: none !important;
-}
+.wz-helper-input {display: none !important;}
+.wz-helper-input + .wordzot-wrapper-pane {display: none;}
+.wz-helper-input:checked + .wordzot-wrapper-pane {display: block;}
 
-.wz-helper-input + .wordzot-wrapper-pane {
-  display: none;
-}
-
-.wz-helper-input:checked + .wordzot-wrapper-pane {
-  display: block;
-}
+.wz-emergency {margin-top:50vh;background:#B71C1C;color:#eee;padding:1rem;border-radius:9px;}
+.wz-emergency h2{color:#eee;margin:0;padding:0;margin-bottom:1rem;}
 
 .wz-subtemplates {
   margin: 0;

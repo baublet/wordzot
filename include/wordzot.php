@@ -95,6 +95,13 @@ class WordZot {
   }
 
   /*
+   * This function returns a template preapred to be displayed in a form
+   */
+  public static function tplFormPrep($template) {
+    return htmlentities(stripslashes($template));
+  }
+
+  /*
    * Our shortcode handling function.
    */
   public function do_shortcode($atts) {

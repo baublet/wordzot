@@ -139,6 +139,7 @@ class WordZotAdmin {
     /* Delete a template group */
     if(isset($_GET["delete"])) {
       $slug = $_GET["delete"];
+      $templates = get_option("wordzot-templates");
       if($slug !== "default" && isset($templates[$slug])) {
         unset($templates[$slug]);
         update_option("wordzot-templates", $templates);
@@ -149,6 +150,14 @@ class WordZotAdmin {
     }
   }
 
+  private function templatesSaveData() {
+    if(!isset($_POST["save-template-data"])) return;
+    $templates = $_POST["wz_tpl"];
+    \WordZot::log("Passed templates:" . print_r($templates, true));
+    update_option("wordzot-templates", $templates);
+    $this->success("Templates successfully saved!");
+  }
+
   private function templatesAddGroup() {
     /* Add a new template group */
     if($_POST["new-template-group"] == true) {
@@ -156,6 +165,7 @@ class WordZotAdmin {
       $ntg_slug = sanitize_title_with_dashes($ntg_name);
       \WordZot::log("New template group slug: " . $ntg_slug);
       if(!empty($ntg_slug)) {
+        $templates = get_option("wordzot-templates");
         if(!isset($templates[$ntg_slug])) {
           $ntg_templates = $this->wz->starter_templates["default"]["templates"];
           \WordZot::log("New template starters: \n" . print_r($ntg_templates, true));
@@ -178,11 +188,18 @@ class WordZotAdmin {
     }
   }
 
-  public function showTemplates() {
-    $templates = get_option("wordzot-templates");
+  private function templatesResetAll() {
+    if(!isset($_POST["reset-template-data"])) return;
+    update_option("wordzot-templates", $this->wz->starter_templates);
+    $this->success("Your templates have been set to plugin defaults");
+  }
 
-    $this->templatesDeleteGroup();
+  public function showTemplates() {
+
+    $this->templatesSaveData();
     $this->templatesAddGroup();
+    $this->templatesDeleteGroup();
+    $this->templatesResetAll();
 
     /* Display our templates */
     $templates = get_option("wordzot-templates");

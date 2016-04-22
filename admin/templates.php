@@ -64,6 +64,10 @@
         <?php endforeach; ?>
         </ul>
         <div class="wz-edit-templates">
+            <input type="hidden" name="wz_tpl[<?php echo $template["slug"]; ?>][name]"
+              value="<?php echo $template["name"]; ?>">
+            <input type="hidden" name="wz_tpl[<?php echo $template["slug"]; ?>][slug]"
+              value="<?php echo $template["slug"]; ?>">
             <?php foreach($template["templates"] as $subtemplate_name => $subtemplate): ?>
               <input type="radio" name="wz_<?php echo $template["slug"]; ?>_e"
                 class="wz-helper-input" <?php echo ($subtemplate_name == 'default') ? "checked=\"checked\"" : ""; ?>
@@ -74,8 +78,8 @@
                       <?php echo $subtemplate_name; ?>
                     </label>
                   </h4>
-                  <textarea name="wz_tpl[<?php echo $template["slug"]; ?>][<?php echo $subtemplate_name; ?>]"
-                    id="wz_<?php echo $template["slug"]; ?>_<?php echo $subtemplate_name; ?>"><?php echo $subtemplate; ?></textarea>
+                  <textarea name="wz_tpl[<?php echo $template["slug"]; ?>][templates][<?php echo $subtemplate_name; ?>]"
+                    id="wz_<?php echo $template["slug"]; ?>_<?php echo $subtemplate_name; ?>"><?php echo \WordZot::tplFormPrep($subtemplate); ?></textarea>
               </div>
             <?php endforeach; ?>
         </div>
@@ -83,9 +87,21 @@
     </div>
   </div>
   <?php endforeach; ?>
-  <input type="submit" value="Save Templates" class="button-primary" style="float:right">
+  <input type="submit" name="save-template-data" value="Save Templates" class="button-primary" style="float:right">
 
 </form>
+
+<div class="wz-emergency">
+  <h2>Template Reset</h2>
+  <p>Mess something up? You can easily reset all of your templates to the default
+    values of this program by pressing this button. But <strong>be careful! This action
+      <em>cannot be undone.</em></strong></p>
+  <form method="POST" action="?page=wordzot-templates">
+    <input type="submit" class="button"
+      name="reset-template-data" value="Reset Template Values to Defaults"
+      onclick="return confirm('Are you sure you want to reset all of your template data? This action cannot be undone.')">
+  </form>
+</div>
 
 
 <?php include("_footer.php"); ?>
