@@ -11,6 +11,7 @@ Author URI:     http://www.ryanmpoe.com
 
 define('_WORDZOT_DEBUG', true);
 define('_WORDZOT_PLUGIN_DIR', dirname(__FILE__));
+
 require_once("twig-setup.php");
 require_once("include/phpZot/fsCache.php");
 require_once("include/phpZot/phpZot.php");

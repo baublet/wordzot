@@ -6,7 +6,7 @@
     <p>Templates are where this plugin shines. You cannot delete the default template,
       but you can edit it, and create and remove custom templates of your own! This
       feature allows you to display your citations in any format you would like, using
-      <a href="http://twig.sensiolabs.org/">Twig's</a> curly braces format and any custom
+      <a href="http://twig.sensiolabs.org/documentation#reference">Twig's</a> curly braces format and any custom
       style ements or inline code you need to control how your citations look.</p>
   </div>
   <div style="width:40%; padding-left: 2rem; padding-top: 2rem; border-left:1px solid rgba(0,0,0,.075)">
