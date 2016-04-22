@@ -28,15 +28,35 @@
   display: block;
 }
 
+.wz-subtemplates {
+  margin: 0;
+  padding: 0;
+  margin-right: 2rem;
+  height: 100%;
+  max-height: 350px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  box-shadow: inset 0 0 3px 3px rgba(0,0,0,.075);
+  width: 15rem;
+}
+.wz-subtemplates li:nth-child(even) label {background: #eee;}
+.wz-subtemplates label {padding: .5rem 2rem .5rem 1rem;display: block;}
+.wz-subtemplates li label:hover {background: #ddd;}
+.wz-subtemplates li {margin:0;padding:0;}
+.wz-subtemplates li + li label {border-top: 1px solid #ddd;}
+.wz-edit-templates{width:100%;}
+.wz-edit-templates .wordzot-wrapper-pane textarea {height:300px;width:100%;}
+
 </style>
 
-<?php foreach($this->errors as $k => $error): ?>
+<?php foreach($this->errors as $error): ?>
   <div class="error">
     <p><strong>Error:</strong> <?php echo $error; ?></p>
   </div>
 <?php endforeach; ?>
 
-<?php foreach($this->success as $k => $success): ?>
+<?php foreach($this->successes as $success): ?>
   <div class="updated">
     <p><strong>Success:</strong> <?php echo $success; ?></p>
   </div>
