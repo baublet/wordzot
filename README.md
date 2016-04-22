@@ -11,24 +11,33 @@ This plugin provides themable (via Twig) access to the Zotero API for integratio
 The Labor and Working-Class History Association will be using this plugin to manage member bibliographies, whereby members add their recent publications via a simple form with spam protection. An admin user may then see entries suggested for addition from specific forms and add them to the bibliography without ever leaving the WordPress administration panel.
 
 # Roadmap
-# How I want Templates to Work
-Templates will be available in the backend to style the display of one's citations. There will be several built-in options for this (e.g., Chicago, MLA, APA, etc.), but the user will have a drop-down box of all types of items that are available in their library to theme. This way, they can theme them to however they want.
+## Version 0.4
+- [ ] Add a DB caching layer
 
-Built-in templates will use hard-coded, inline styles, but we're using Twig here so people can edit that and make it slimmer if they so choose.
+## Version 0.3
+- [ ] Advanced shortcode options
+  - [ ] Automatic pagination
+  - [ ] Searches
+  - [ ] Multiple tags
+  - [ ] Logic
 
-Users will be able to create an infinite number of template groups so that they can style the same references in different ways in different places. But there will always be a default template group that will be the fallback when unknown template groups are entered, or when a template group doesn't have a template defined for a particular item type. WordZot will fall back to that item's type in the default subgroup, and to the "default default" if that type isn't set on the default template.
+## Version 0.2
+- [ ] More shortcode options
+  - [ ] Show items from a tag
+  - [ ] Show items from a group
+  - [ ] Show items from a collection
 
-# Caching
-I'm still thinking through how I should cache. I think I want to cache by request (and thus in chunks) rather than storing individual items in a custom table. I'd like to use as few custom database options as possible, even if that means storing a serialized object as a WordPress option.
-
-I'm thinking at the moment of preferring the filesystem, but falling back to WordPress options if the user prefers it or the cache isn't writable.
+- [ ] Add support for user-submitted items
 
 ## Version 0.1
 - [x] Basic Zotero integration
   - [x] Allow user to configure the plugin by adding a Zotero key
   - [x] Check the validity and permissions of the Zotero api key
 
-- [ ] Fetch references from a Zotero account/group
+- [x] Basic shortcode options
+  - [x] Show all items from a user
+
+- [x] Fetch references from a Zotero account/group
   - [x] Allow the user to do basic operations
     - [x] Fetch a user's collections
     - [x] Fetch a user's groups
@@ -38,32 +47,24 @@ I'm thinking at the moment of preferring the filesystem, but falling back to Wor
     - [x] Basic item fetching
     - [x] Formatting all of the above for dev-friendly operations
 
-  - [ ] Basic shortcode options
-    - [ ] Show items from a tag
-    - [ ] Show items from a group
-    - [ ] Show items from a collection
+- [x] Advanced shortcode options
+  - [x] Including/excluding types
 
-  - [ ] Advanced shortcode options
-    - [ ] Automatic pagination
-    - [ ] Searches
-    - [ ] Multiple tags
-    - [ ] Logic
+- [x] Setup a cache these so we don't have to hammer the API
+  - [x] Steps for fetching before displaying
+    - [x] If it's already cached, just use the information in the local db
+    - [x] Is the cache old? Dump it, if so and go to next step. Otherwise jump to display
+    - [x] Fetch items from the API
+    - [x] Put them in the local cache
+    - [x] Display them
 
-- [ ] Setup a backend database to cache these so we don't have to hammer the API
-  - [ ] Steps for fetching before displaying
-    - [ ] If it's already cached, just use the information in the local db
-    - [ ] Is the cache old? Dump it, if so and go to next step. Otherwise jump to display
-    - [ ] Fetch items from the API
-    - [ ] Put them in the local DB
-    - [ ] Display them
+- [x] Decouple phpZot so that I can add it as a submodule and its own repo later
+- [x] Incorporate Twig templating for displaying references
+  - [x] Setup backend admin options for this (we won't be doing inline templates)
+  - [x] Template groups
+    - [x] Default - the fallbacks and default templates - can't delete it
+    - [x] Users can create their own groups, however
+    - [x] Each group has a separate template for each citation type
 
-- [ ] Decouple phpZot so that I can add it as a submodule and its own repo later
-- [ ] Incorporate Twig templating for displaying references
-  - [ ] Setup backend admin options for this (we won't be doing inline templates)
-  - [ ] Template groups
-    - [ ] Default - the fallbacks and default templates - can't delete it
-    - [ ] Users can create their own groups, however
-    - [ ] Each group has a separate template for each citation type
-
-  - [ ] Use Twig to render the citations
-  - [ ] If no template in the group? Use default. No default for that type? Show an error
+  - [x] Use Twig to render the citations
+  - [x] If no template in the group? Use default. No default for that type? Don't render it
