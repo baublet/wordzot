@@ -11,7 +11,26 @@ class phpZot {
 
   public  $error = false,
           $error_message = null,
-          $cache_provider = null;
+          $cache_provider = null,
+          $options = array(),
+          $sortOptions = array(
+            "dateAdded",
+            "dateModified",
+            "title",
+            "creator",
+            "type",
+            "date",
+            "publisher",
+            "publicationTitle",
+            "journalAbbreviation",
+            "language",
+            "accessDate",
+            "libraryCatalog",
+            "callNumber",
+            "rights",
+            "addedBy",
+            "numItems"
+          );
 
   private $api_key;
 
@@ -25,7 +44,7 @@ class phpZot {
    */
   public function request($url) {
     // If this is cached, return the cached value instead
-    $cache_key = $url;
+    $cache_key = md5($url . serialize($this->options));
     if($this->cache_provider !== null) {
       $cached = $this->cache_provider->get($cache_key);
       if($cached !== false) {
@@ -42,7 +61,7 @@ class phpZot {
       "Authorization: Bearer " . $this->api_key,
       "Expect:"
     );
-    $url =  ZOTERO_API_URI . $url;
+    $url =  substr(ZOTERO_API_URI . $url . $this->get_options_string(), 0, -1);
 
     curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -74,6 +93,66 @@ class phpZot {
   }
 
   /*
+   * This function adds the options to the request URL string
+   */
+  private function get_options_string() {
+    $string = "?";
+    // First, parse the things that use Zotero's Search Syntax
+    // https://www.zotero.org/support/dev/web_api/v3/basics#search_syntax
+    if(isset($this->options["itemType"]))
+      $string .= $this->gos_search_syntax($this->options["itemType"], "itemType");
+    if(isset($this->options["tag"]))
+      $string .= $this->gos_search_syntax($this->options["tag"], "tag");
+    // Sort order operators
+    $string .= $this->gos_sort_order();
+    return $string;
+  }
+
+  /*
+   * A utility function turning $data into a URL string with search syntax intact
+   */
+  private function gos_search_syntax($data, $type) {
+    if(empty($data)) return "";
+    $string = "";
+    if(is_array($data)) {
+      // Allowing recursion
+      foreach($data as $item)
+        $string .= $this->gos_search_syntax($item, $type);
+    } else {
+      $items = explode("||", $data);
+      $string.= $type . "=";
+      // Only URL encode the tag names themselves, not the bars or the minus sign
+      foreach($items as &$item) {
+        $negate = false;
+        if(substr($item, 0, 1) == "-") $negate = true;
+        // If we negate the item, only encode everything after the minus
+        $item = $negate ? urlencode(substr($item, 1)) : urlencode($item);
+        // Then add the minus back on after we encode it
+        if($negate) $item = "-" . $item;
+      }
+      $string .= implode(" || ", $items) . "&";
+    }
+    return $string;
+  }
+
+  /*
+   * This function parses our sorting and sort order options
+   */
+  private function gos_sort_order() {
+    $string = "";
+    if(isset($this->options["sort"]) && in_array($this->options["sort"], $this->sortOptions)) {
+      $string .= "sort=" . $options["sort"] . "&";
+    }
+    if(isset($this->options["order"])) {
+      $order = strtolower($this->options["order"]);
+      if($order == "asc" || $order == "desc") {
+        $string .= "direction=" . $order . "&";
+      }
+    }
+    return $string;
+  }
+
+  /*
    * This function parses a response, because with this class I want very simple
    * functions. So if there's an error, this class stores that error, but returns
    * a false response.
@@ -85,6 +164,22 @@ class phpZot {
       return false;
     }
     return $response;
+  }
+
+  /*
+   * Resets your options to the default (blank) state for the API call
+   */
+  public function resetOptions() {
+    $this->options = array();
+  }
+
+  /*
+   * Sets the options for a URL string. This is typically used for searches when
+   * you're doing some API call related to items. All this function does is take
+   * an associative array, which this class uses to build the API key url
+   */
+  public function setOptions($options) {
+    return $this->options = array_merge($this->options, $options);
   }
 
   /*

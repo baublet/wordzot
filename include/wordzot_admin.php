@@ -129,7 +129,7 @@ class WordZotAdmin {
     // Parse the data they submitted to be parsed via the shortcode parser
     if($_POST["parse"]) {
       update_option("wordzot-playground", $_POST["parse"]);
-      $output = do_shortcode($_POST["parse"]);
+      $output = do_shortcode(stripslashes($_POST["parse"]));
     }
 
     include($this->admin_dir . "playground.php");
@@ -153,7 +153,7 @@ class WordZotAdmin {
   private function templatesSaveData() {
     if(!isset($_POST["save-template-data"])) return;
     $templates = $_POST["wz_tpl"];
-    \WordZot::log("Passed templates:" . print_r($templates, true));
+    //\WordZot::log("Passed templates:" . print_r($templates, true));
     update_option("wordzot-templates", $templates);
     $this->success("Templates successfully saved!");
   }

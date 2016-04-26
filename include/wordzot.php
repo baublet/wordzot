@@ -4,52 +4,11 @@ class WordZot {
   public $phpZot, $twig;
   private $api_key = false;
 
-  public $starter_templates = array(
-    "default" => array(
-      "slug" => "default",
-      "name" => "Default Template",
-      "templates" => array(
-        "default" => "{% for author in authors %}{{ author.fullName }}, {% endfor %} <em>{{ title }}</em> ({{ date }})<br><br>",
-        "note" => "",
-        "book" => "",
-        "bookSection" => "",
-        "journalArticle" => "",
-        "magazineArticle" => "",
-        "thesis" => "",
-        "letter" => "",
-        "manuscript" => "",
-        "interview" => "",
-        "film" => "",
-        "artwork" => "",
-        "webpage" => "",
-        "report" => "",
-        "bill" => "",
-        "case" => "",
-        "hearing" => "",
-        "patent" => "",
-        "statute" => "",
-        "email" => "",
-        "blogPost" => "",
-        "instantMessage" => "",
-        "forumPost" => "",
-        "audioRecording" => "",
-        "presentation" => "",
-        "videoRecording" => "",
-        "tvBroadcast" => "",
-        "radioBroadcast" => "",
-        "podcast" => "",
-        "computerProgram" => "",
-        "document" => "",
-        "encyclopediaArticle" => "",
-        "dictionaryEntry" => "",
-        "attachment" => ""
-      )
-    )
-  );
-
   public function __construct($twig) {
     $this->twig = $twig;
     $this->initialize();
+    include(_WORDZOT_PLUGIN_DIR . "/include/default_templates.php");
+    $this->starter_templates = $starter_templates;
   }
 
   public function install() {
@@ -106,12 +65,14 @@ class WordZot {
    * Our shortcode handling function.
    */
   public function do_shortcode($atts) {
+    if(get_option("wordzot-user-id") == false) return "Incorrect or unset Zotero API key.";
+
     $options = shortcode_atts(array(
-        "collection" => false,
-        "group" => false,
-        "tags" => false,
-        "tag" => false,
-        "limit" => false,
+        "collection" => null,
+        "group" => null,
+        "tags" => null,
+        "tag" => null,
+        "limit" => 100,
         "sort" => false,
         "order" => false,
         "direction" => false,
@@ -122,36 +83,34 @@ class WordZot {
         "type" => "-attachment"
     ), $atts);
 
-    // Set the to_include and to_exclude options
-    $types = explode(",", $options["type"]);
-    $to_include = array();
-    $to_exclude = array();
-    foreach($types as $type) {
-      if(substr($type, 0, 1) == "-") {
-        $to_exclude[] = substr($type, 1);
-      } else {
-        $to_include[] = $type;
-      }
-    }
+    $php_zot_options = array();
+    // Breaks our tags and itemTypes down into something phpZot understands
+    // We do that by combining the two
+    \WordZot::log("Tag options: " . print_r($options, true));
+    $options["tag"] = explode(";", $options["tag"]);
+    $options["tags"] = explode(";", $options["tags"]);
+    $php_zot_options["tag"] = array_filter(array_merge($options["tags"], $options["tag"]));
+    $php_zot_options["itemType"] = explode(";", $options["type"]);
 
-    $content = "";
+    \WordZot::log("Tags: ". print_r($php_zot_options["tag"], true));
 
-    if(get_option("wordzot-user-id") == false) return "Incorrect or unset Zotero API key.";
+    // Sets our sort and sort order into a variable phpZot understands
+    $php_zot_options["sort"] = $options["sort"];
+    $php_zot_options["direction"] = ($options["direction"]) ? $options["direction"] : $options["order"];
 
+    // Set our basic options
+    $this->phpZot->resetOptions();
+    $this->phpZot->setOptions($php_zot_options);
+
+    // Get our items
     $items = $this->phpZot->getUserItems(get_option("wordzot-user-id"));
 
+    // Loop through our items to process the templates
+    $content = "";
+    if(count($items) < 1) return $options["noitems"];
     foreach($items as $item) {
-      // Skip this if there are $to_include types set and this item isn't one of them
-      if(count($to_include) > 0) {
-        if(!in_array($item->type, $to_include)) continue;
-      }
-      // Skip this item type if it's explicitly excluded
-      if(in_array($item->type, $to_exclude)) continue;
       $content .= $this->processTemplate($item->type, $options["template"], $item);
     }
-
-    // Loop through our items to process the templates
-    \WordZot::log("Twig loader: " . print_r($this->twig->getLoader(), true));
 
     return $content;
   }
@@ -207,7 +166,7 @@ class WordZot {
       }
     }
 
-    \WordZot::log("Twig variables: " . print_r($twig_vars, true));
+    //\WordZot::log("Twig variables: " . print_r($twig_vars, true));
 
     // And render it!
     return $this->twig->render($twig_template_name, $twig_vars);

@@ -7,7 +7,7 @@
   <tr>
     <td width="50%" style="padding-right: 1rem;">
       <form action="" method="POST">
-        <textarea style="width: 100%;height: 200px" name="parse"><?php echo (isset($_POST["parse"])) ? $_POST["parse"]: get_option("wordzot-playground");?></textarea>
+        <textarea style="width: 100%;height: 200px" name="parse"><?php echo (isset($_POST["parse"])) ? stripslashes($_POST["parse"]) : stripslashes(get_option("wordzot-playground"));?></textarea>
         <?php submit_button('Preview Shortcode', 'primary','submit', TRUE); ?>
       </form>
     </td>
