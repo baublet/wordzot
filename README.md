@@ -22,10 +22,10 @@ The Labor and Working-Class History Association will be using this plugin to man
   - [ ] Logic
 
 ## Version 0.2
-- [ ] More shortcode options
-  - [ ] Show items from a tag
-  - [ ] Show items from a group
-  - [ ] Show items from a collection
+- [x] More shortcode options
+  - [x] Show items from a tag
+  - [x] Show items from a group
+  - [x] Show items from a collection
 
 - [ ] Add support for user-submitted items
 

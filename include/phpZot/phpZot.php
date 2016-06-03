@@ -75,9 +75,18 @@ class phpZot {
     $response = curl_exec($ch);
     curl_close($ch);
 
+    echo "<hr><hr>" . $url . "<hr>";
+    // echo $response . "<hr><hr>";
+
     if($response == "Forbidden") {
       $this->error = 403;
       $this->error_message = "Forbidden. Make sure your API key or User ID is correct.";
+      return false;
+    }
+
+    if(substr($response, 0, 1) !== "[") {
+      $this->error = 400;
+      $this->error_message = $response;
       return false;
     }
 
@@ -112,27 +121,13 @@ class phpZot {
    * A utility function turning $data into a URL string with search syntax intact
    */
   private function gos_search_syntax($data, $type) {
-    if(empty($data)) return "";
-    $string = "";
-    if(is_array($data)) {
-      // Allowing recursion
-      foreach($data as $item)
-        $string .= $this->gos_search_syntax($item, $type);
-    } else {
-      $items = explode("||", $data);
-      $string.= $type . "=";
-      // Only URL encode the tag names themselves, not the bars or the minus sign
-      foreach($items as &$item) {
-        $negate = false;
-        if(substr($item, 0, 1) == "-") $negate = true;
-        // If we negate the item, only encode everything after the minus
-        $item = $negate ? urlencode(substr($item, 1)) : urlencode($item);
-        // Then add the minus back on after we encode it
-        if($negate) $item = "-" . $item;
-      }
-      $string .= implode(" || ", $items) . "&";
-    }
-    return $string;
+    $data = urlencode($data);
+    // NOTE: Zotero's API is ridiculously limited. It can't exclude multiple
+    // itemTypes for some reason. If you try to do so, it will return an error.
+    if($type == "itemType") $data = implode("+%7C%7C+", explode("+", $data));
+    if($type == "tag") $data = str_replace("+%26%26+", "&" . $type . "=", $data);
+    if($type == "tag") $data = str_replace("+%7C%7C+", "&" . $type . "=", $data);
+    return $type . "=" . $data . "&";
   }
 
   /*
@@ -161,6 +156,8 @@ class phpZot {
     if($response == null || empty($response)) {
       $this->error = 404;
       $this->error_message = "Not found. Please make sure the User or Group ID are correct.";
+      return false;
+    } elseif ($this->error) {
       return false;
     }
     return $response;
@@ -370,7 +367,13 @@ class phpZot {
   }
 
   public function getGroupItems($group_id) {
-
+    return $this->parseItems(
+      $this->request(
+                     "/groups/" .
+                     $group_id .
+                     "/items"
+      )
+    );
   }
 
   public function getCollectionItems($url) {
@@ -386,7 +389,7 @@ class phpZot {
 
   public function getGroupCollectionItems($group_id, $collection_key) {
     return $this->getCollectionItems(
-      "/grups/" . $group_id . "/collections/" . $collection_key . "/items"
+      "/groups/" . $group_id . "/collections/" . $collection_key . "/items"
     );
   }
 

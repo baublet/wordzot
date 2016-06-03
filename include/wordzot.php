@@ -72,7 +72,7 @@ class WordZot {
         "group" => null,
         "tags" => null,
         "tag" => null,
-        "limit" => 100,
+        "limit" => 50,
         "sort" => false,
         "order" => false,
         "direction" => false,
@@ -80,17 +80,15 @@ class WordZot {
         "paginate" => false,
         "template" => "default",
         "noitems" => "<p>No items have yet been added to this collection, group, or user ID.</p>",
-        "type" => "-attachment"
+        "type" => "-note"
     ), $atts);
 
     $php_zot_options = array();
-    // Breaks our tags and itemTypes down into something phpZot understands
-    // We do that by combining the two
+
     \WordZot::log("Tag options: " . print_r($options, true));
-    $options["tag"] = explode(";", $options["tag"]);
-    $options["tags"] = explode(";", $options["tags"]);
-    $php_zot_options["tag"] = array_filter(array_merge($options["tags"], $options["tag"]));
-    $php_zot_options["itemType"] = explode(";", $options["type"]);
+    $options["tags"] .= $options["tag"];
+    $php_zot_options["tag"] = $options["tags"];
+    $php_zot_options["itemType"]  = $options["type"];
 
     \WordZot::log("Tags: ". print_r($php_zot_options["tag"], true));
 
@@ -102,15 +100,23 @@ class WordZot {
     $this->phpZot->resetOptions();
     $this->phpZot->setOptions($php_zot_options);
 
-    // Get our items
-    $items = $this->phpZot->getUserItems(get_option("wordzot-user-id"));
+    // Get our items, preferring the user to the group
+    $items = array();
+    if($options["group"] == null) {
+      $items = $this->phpZot->getUserItems(get_option("wordzot-user-id"));
+    } else {
+      $items = $this->phpZot->getGroupItems($options["group"]);
+    }
 
     // Loop through our items to process the templates
     $content = "";
-    if(count($items) < 1) return $options["noitems"];
     foreach($items as $item) {
       $content .= $this->processTemplate($item->type, $options["template"], $item);
     }
+    if(count($items) < 1) $content = $options["noitems"];
+    if($this->phpZot->error) $content = "<p><strong>phpZot Error:</strong>" .
+                                        " (" . $this->phpZot->error . ") " .
+                                        $this->phpZot->error_message . "</p>";
 
     return $content;
   }
